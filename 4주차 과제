@@ -1,0 +1,34 @@
+1. 코드 보완
+import numpy as np
+import pandas as pd
+
+# 예시 데이터프레임이 df 라고 가정
+# df = pd.read_csv(...) 또는 df = pd.DataFrame(...) 등의 방법으로 생성되어 있어야 함
+
+# 숫자형 데이터만 선택해 평균 계산, 이름을 'average'로 설정
+average = df.select_dtypes(np.number).mean().rename('average')
+
+# 평균 행을 기존 df에 추가
+df.loc['average'] = average
+
+
+
+
+
+2. 월별 평균풍속 그래프
+# 코드 생략 주석문
+weather = pd.read_csv(weather_file, encoding='CP949')
+weather['month'] = pd.DatetimeIndex(weather['일시']).month
+
+monthly = [ None for x in range(12) ]             # 달별로 구분된 12개의 None 값
+monthly_wind = [ 0 for x in range(12) ]            # 각 달의 평균 풍속을 담을 리스트
+for i in range(12) :
+    monthly[i] = weather[ weather['month'] == i + 1 ]     # 달별로 분리
+    monthly_wind[i] = monthly[i].mean()['평균 풍속']       # 개별 데이터 분석
+
+months = np.arange(1, 13)         # 1에서 12월의 연속된 수를 생성
+plt.bar(months, monthly_wind, color='blue')        # 색상은 구분을 위해 blue로 변경
+plt.xlabel('Month')
+plt.ylabel('Wind Speed')          # y축 라벨도 풍속에 맞게 수정
+plt.title('월별 평균 풍속')
+plt.show()
