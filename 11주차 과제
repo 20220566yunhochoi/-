@@ -1,0 +1,51 @@
+pandas를 pd로 가져오기
+matplotlib.pyplot을 plt로 가져오기
+
+CSV 파일을 로드합니다
+file_path = '/content/drive/MyDrive/Weekly_United_States_COVID-19_Cases_and_Deaths_by_State_-_ARCHIVED_20250520.csv'
+df = pd.read_csv(file_path)
+
+각 주의 인구(대략적인 값)
+state_populations = {
+'CA': 39500000, # 캘리포니아
+'TX': 29000000, # 텍사스
+'VA': 8600000, # 버지니아
+'IL': 12600000, # 일리노이
+'WA': 7800000 # 워싱턴
+}
+
+인구 조정 감염률을 저장하기 위한 DataFrame을 생성합니다.
+rate_df = pd.DataFrame()
+
+
+state_populations.keys()에서 각 상태를 처리합니다 .
+
+(1) 현재 상태에 대한 필터
+state_df = df[df['state'] == state].copy()
+
+(2) 필요한 컬럼을 선택하세요
+상태_총_사례 = 상태_df[['총_사례', '업데이트_날짜']]
+
+(3) 날짜 컬럼을 인덱스로 설정
+state_total_cases = state_total_cases.set_index('date_updated')
+
+(4) 날짜를 datetime 타입으로 변환하여 정렬합니다.
+상태_총_사건.index = pd.to_datetime(상태_총_사건.index)
+상태_총_사건 = 상태_총_사건.sort_index()
+
+(5) 인구 조정 발병률(%) 계산
+주_총_사례[f'{주}_비율'] = (주_총_사례['총_사례'] / 주_인구[주]) * 100
+
+(6) 최종 DataFrame에 추가
+rate_df[state] = state_total_cases[f'{state}_rate'] 5. state_populations.keys()의 state에 대한
+결과를
+plt.figure(figsize=(14, 7)) 로 표시합니다. plt.plot(rate_df.index, rate_df[state], label=state)
+
+
+plt.title('주별 COVID-19 누적 확진자 비율(인구당)')
+plt.xlabel('날짜')
+plt.ylabel('감염률(%)')
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
