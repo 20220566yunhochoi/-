@@ -1,0 +1,81 @@
+필요한 라이브러리 불러오기
+import pandas as pd
+import folium
+from folium.plugins import HeatMap
+
+구글 드라이브 마운트 (Colab 환경에서 파일 접근을 위해)
+from google.colab import drive
+drive.mount('/content/drive')
+
+지하철 이용 로그 데이터와 역 위치 정보 CSV 불러오기
+data = pd.read_csv('/content/drive/MyDrive/seoul-metro-2021.logs.csv')
+station_info = pd.read_csv('/content/drive/MyDrive/seoul-metro-station-info.csv')
+
+역 코드별로 승하차 인원 합계 구하기
+grouped_data = data.groupby("station_code")[["people_in", "people_out"]].sum()
+
+역 위치 정보에서 필요한 컬럼만 선택하고 인덱스를 역 코드로 설정
+station_info = station_info[['station.code', 'geo.latitude', 'geo.longitude']]
+station_info = station_info.set_index('station.code')
+
+이용 로그와 위치 정보를 역 코드 기준으로 결합
+joined_data = grouped_data.join(station_info)
+
+전체 승차 인원 기준 열지도 생성
+seoul_in = folium.Map(location=[37.55, 126.98], zoom_start = 12)
+HeatMap(data = joined_data[['geo.latitude', 'geo.longitude', 'people_in']]).add_to(seoul_in)
+
+오전 9시 이전 데이터(출근 시간대) 필터링
+morning_data = data[pd.to_datetime(data.timestamp, errors='coerce').dt.hour < 9]
+
+오후 5시 이후 데이터(퇴근 시간대) 필터링
+evening_data = data[pd.to_datetime(data.timestamp, errors='coerce').dt.hour > 17]
+
+출근 시간대 역별 이용자 수 집계
+morning_station_sum = morning_data.groupby("station_code").sum()
+
+퇴근 시간대 역별 이용자 수 집계
+evening_station_sum = evening_data.groupby("station_code").sum()
+
+출근 시간대 데이터와 역 위치 정보 결합
+morning_joined_data = morning_station_sum.join(station_info)
+
+퇴근 시간대 데이터와 역 위치 정보 결합
+evening_joined_data = evening_station_sum.join(station_info)
+
+출근 시간대 승차 인원 열지도 시각화
+morning_seoul_in = folium.Map(location=[37.55, 126.98], zoom_start = 12)
+HeatMap(data = morning_joined_data[['geo.latitude','geo.longitude','people_in']]).add_to(morning_seoul_in)
+morning_seoul_in
+
+출근 시간대 하차 인원 열지도 시각화
+morning_seoul_out = folium.Map(location=[37.55, 126.98], zoom_start = 12)
+HeatMap(data = morning_joined_data[['geo.latitude','geo.longitude','people_out']]).add_to(morning_seoul_out)
+morning_seoul_out
+
+퇴근 시간대 승차 인원 열지도 시각화
+evening_seoul_in = folium.Map(location=[37.55, 126.98], zoom_start = 12)
+HeatMap(data = evening_joined_data[['geo.latitude','geo.longitude','people_in']]).add_to(evening_seoul_in)
+evening_seoul_in
+
+퇴근 시간대 하차 인원 열지도 시각화
+evening_seoul_out = folium.Map(location=[37.55, 126.98], zoom_start = 12)
+HeatMap(data = evening_joined_data[['geo.latitude','geo.longitude','people_out']]).add_to(evening_seoul_out)
+evening_seoul_out
+
+
+
+분석
+출근 시간대(오전 9시 이전)
+승차 인원 : 서울 외곽의 주거 지역(구로, 노원, 강서구 등)에서 승차 인원이 집중
+=> 많은 시민들이 외곽 주거지에서 도심으로 출근함을 보여줌
+하차 인원 : 강남, 종로, 여의도 등 도심의 업무 지구에서 하차 인원이 많음
+=> 출근 시간대에 도심으로의 이동이 활발함
+퇴근 시간대(오후 5시 이후)
+승차 인원 : 도심의 업무 지구에서 승차 인원이 많아짐
+=> 시민들이 퇴근하여 외곽 주거지로 이동함을 의미
+하차 인원 : 서울 외곽의 주거 지역에서 하차 인원이 증가.
+=> 출근 시간대와 반대의 이동 패턴.
+결론
+출근 시간대에는 업무 지구가 모여 있는 강남, 종로, 여의도 등으로 시민들이 많이 이동하고
+퇴근 시간대에는 주거 지구가 모여 있는 서울 외곽으로 시민들이 주로 이동함.
