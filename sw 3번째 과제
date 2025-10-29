@@ -1,0 +1,144 @@
+🏬 쇼핑몰 시스템 클래스 다이어그램 설계
+🎯 주요 목적
+
+회원이 상품을 조회, 장바구니에 담고 주문 및 결제할 수 있는 온라인 쇼핑몰.
+
+🧩 클래스 목록 및 관계
+1. Member (회원)
+속성	타입	설명
+memberId	String	회원 고유 ID
+name	String	이름
+email	String	이메일
+password	String	비밀번호
+address	String	주소
+phone	String	연락처
+
+메서드
+
+register()
+
+login()
+
+updateProfile()
+
+2. Product (상품)
+속성	타입	설명
+productId	String	상품 ID
+name	String	상품명
+description	String	상품 설명
+price	double	가격
+stock	int	재고 수량
+
+메서드
+
+updateStock()
+
+applyDiscount()
+
+3. Category (카테고리)
+속성	타입	설명
+categoryId	String	카테고리 ID
+name	String	카테고리명
+
+관계
+
+Category 1 --- * Product
+(한 카테고리에 여러 상품이 속함)
+
+4. Cart (장바구니)
+속성	타입	설명
+cartId	String	장바구니 ID
+createdDate	Date	생성일
+
+관계
+
+Member 1 --- 1 Cart
+
+Cart 1 --- * CartItem
+
+5. CartItem (장바구니 항목)
+속성	타입	설명
+quantity	int	수량
+subTotal	double	항목별 소계
+
+관계
+
+CartItem * --- 1 Product
+
+CartItem * --- 1 Cart
+
+6. Order (주문)
+속성	타입	설명
+orderId	String	주문 ID
+orderDate	Date	주문 일자
+totalAmount	double	총 금액
+status	String	주문 상태(예: 결제완료, 배송중 등)
+
+관계
+
+Member 1 --- * Order
+
+Order 1 --- * OrderItem
+
+7. OrderItem (주문 상세)
+속성	타입	설명
+quantity	int	주문 수량
+price	double	단가
+subTotal	double	항목 총액
+
+관계
+
+OrderItem * --- 1 Product
+
+OrderItem * --- 1 Order
+
+8. Payment (결제)
+속성	타입	설명
+paymentId	String	결제 ID
+method	String	결제수단 (카드, 계좌이체 등)
+amount	double	결제 금액
+paymentDate	Date	결제 일자
+
+관계
+
+Payment 1 --- 1 Order
+
+9. Delivery (배송)
+속성	타입	설명
+deliveryId	String	배송 ID
+trackingNumber	String	운송장 번호
+status	String	배송 상태
+address	String	배송지 주소
+
+관계
+
+Delivery 1 --- 1 Order
+
+🔗 관계 요약 (UML 표기)
+Member 1 --- * Order
+Member 1 --- 1 Cart
+Order 1 --- * OrderItem
+Order 1 --- 1 Payment
+Order 1 --- 1 Delivery
+Cart 1 --- * CartItem
+Category 1 --- * Product
+Product 1 --- * OrderItem
+Product 1 --- * CartItem
+
+💡 Visual Paradigm 내에서 모델링 구조 예시
++-----------------+
+|     Member      |
++-----------------+
+| memberId        |
+| name            |
+| email           |
+| password        |
+| address         |
+| phone           |
++-----------------+
+| register()      |
+| login()         |
+| updateProfile() |
++-----------------+
+
+(연관 관계 다이어그램으로 Product, Cart, Order 등과 연결)
