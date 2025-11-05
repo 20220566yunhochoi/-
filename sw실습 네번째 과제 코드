@@ -1,0 +1,25 @@
+@startuml
+actor User
+participant WebApp
+participant BookingSystem
+participant PaymentGateway
+database AirlineDB
+
+User -> WebApp: 항공편 검색 요청(출발지, 도착지, 날짜)
+WebApp -> BookingSystem: 항공편 검색 요청
+BookingSystem -> AirlineDB: 항공편 정보 조회
+AirlineDB --> BookingSystem: 항공편 목록 반환
+BookingSystem --> WebApp: 검색 결과 전달
+WebApp --> User: 항공편 목록 표시
+
+User -> WebApp: 항공편 선택 및 예약 요청
+WebApp -> BookingSystem: 예약 정보 전달
+BookingSystem -> AirlineDB: 좌석 가능 여부 확인
+AirlineDB --> BookingSystem: 좌석 가능 응답
+BookingSystem -> PaymentGateway: 결제 요청
+PaymentGateway --> BookingSystem: 결제 성공 응답
+BookingSystem -> AirlineDB: 예약 확정 저장
+AirlineDB --> BookingSystem: 예약 완료 확인
+BookingSystem --> WebApp: 예약 완료 및 티켓 정보
+WebApp --> User: 예약 완료 및 전자항공권 발급
+@enduml
