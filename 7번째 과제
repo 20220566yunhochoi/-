@@ -1,0 +1,89 @@
+1. class diagram
+
++----------------+          +------------------+        +------------------+
+ |    Customer    |<>--------|    Rental        |<>------|    Movie         |
+ +----------------+          +------------------+        +------------------+
+ | - customerID   |          | - rentalID       |        | - movieID        |
+ | - name         |          | - rentDate       |        | - title          |
+ | - email        |          | - returnDate     |        | - genre          |
+ | - phone        |          | - rentalStatus   |        | - director       |
+ +----------------+          +------------------+        | - cast           |
+           |                        |                   | - duration       |
+           |                        |                   +------------------+
+           |                        |
+   +-------+---------+              |
+   | RentalHistory   |              |
+   +-----------------+              |
+   | - historyID     |              |
+   | - rentalDate    |              |
+   | - returnDate    |              |
+   | - status        |              |
+   +-----------------+              |
+           |                        |
+           |                        |
+   +-----------------+          +-------------------+
+   |   Payment       |          |   MovieCatalog    |
+   +-----------------+          +-------------------+
+   | - paymentID     |          | - catalogID       |
+   | - amount        |          | - movieList       |
+   | - paymentDate   |          | - updateMovie()   |
+   +-----------------+          | - addMovie()      |
+           |                    +-------------------+
+           |
+   +-------------------+  
+   |  Recommendation   |
+   |   System          |
+   +-------------------+
+   | - preferences     |
+   | - recommendMovies()|
+   +-------------------+
+           |
+    +------------------+         
+    |     Admin        |
+    +------------------+
+    | - adminID        |
+    | - name           |
+    | - role           |
+    +------------------+
+           |
+  +-------------------+  
+  |  Manage Movies    |
+  +-------------------+
+  | - addMovie()      |
+  | - updateMovie()   |
+  | - deleteMovie()   |
+  +-------------------+
+
+2. sequence diagram
+
+Customer        MovieCatalog       Movie       Rental       Payment       Admin
+    |                  |              |            |             |          |
+    |   searchMovies()  |              |            |             |          |
+    |------------------>|              |            |             |          |
+    |                  |  returnMovies()           |             |          |
+    |                  |<-------------------------|             |          |
+    |                  |              |            |             |          |
+    |   selectMovie()  |              |            |             |          |
+    |------------------>|              |            |             |          |
+    |                  |              |            |             |          |
+    |    rentMovie()   |              |            |             |          |
+    |------------------>|              |            |             |          |
+    |                  |              | createRental()           |          |
+    |                  |              |<-------------------------|          |
+    |                  |              |            |             |          |
+    |                  |              |            | returnRental()|          |
+    |                  |              |            |<-------------------------|
+    |                  |              |            |             |          |
+    |   makePayment()  |              |            |             |          |
+    |------------------>|              |            |             |          |
+    |                  |              |            |             |          |
+    |                  |              |            | createPayment()            |
+    |                  |              |            |<-------------------------| 
+    |                  |              |            |             |          |
+    |                  |              |            |             | updateRentalStatus()
+    |                  |              |            |             |<-------------------------|
+    |                  |              |            |             |          |
+    |                  |              |            |             |          |
+    |   receiveReceipt()|             |            |             |          |
+    |<-----------------|              |            |             |          |
+    |                  |              |            |             |          |
